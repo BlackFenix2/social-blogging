@@ -29,7 +29,7 @@ function PostManager() {
 
   const postRef = firestore
     .collection("users")
-    .doc(auth.currentUser.uid)
+    .doc(auth.currentUser?.uid)
     .collection("posts")
     .doc(slug as string);
 
