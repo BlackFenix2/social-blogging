@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDocumentDataOnce } from "react-firebase-hooks/firestore";
 import styles from "styles/Admin.module.css";
-import DeletePostButton from "./DeletePostbutton";
+import DeletePostButton from "./DeletePostButton";
 import PostForm from "./PostForm";
 
 export default function PostManager() {
