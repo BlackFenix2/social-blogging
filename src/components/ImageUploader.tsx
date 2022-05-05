@@ -1,3 +1,4 @@
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import React, { SyntheticEvent } from "react";
 import { useState } from "react";
 import { auth, storage, STATE_CHANGED } from "../lib/firebase";
@@ -8,7 +9,7 @@ type Props = {};
 const ImageUploader = (props: Props) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [downloadURL, setDownloadURL] = useState(null);
+  const [downloadURL, setDownloadURL] = useState<string>();
 
   const uploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
@@ -19,13 +20,14 @@ const ImageUploader = (props: Props) => {
     const extension = file.type.split("/")[1];
 
     // Makes reference to the storage bucket location
-    const ref = storage.ref(
+    const fileRef = ref(
+      storage,
       `uploads/${auth.currentUser!.uid}/${Date.now()}.${extension}`
     );
     setUploading(true);
 
     // Starts the upload
-    const task = ref.put(file);
+    const task = uploadBytesResumable(fileRef, file);
 
     // Listen to updates to upload task
     task.on(STATE_CHANGED, (snapshot) => {
@@ -37,9 +39,9 @@ const ImageUploader = (props: Props) => {
 
       // Get downloadURL AFTER task resolves (Note: this is not a native Promise)
       task
-        .then((d) => ref.getDownloadURL())
+        .then((d) => getDownloadURL(fileRef))
         .then((url) => {
-          setDownloadURL(url);
+          setDownloadURL(url as string);
           setUploading(false);
         });
     });

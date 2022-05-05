@@ -1,32 +1,49 @@
-import AuthCheck from "components/AuthCheck";
-import PostFeed from "components/PostFeed";
-import { UserContext } from "lib/context";
-import { auth, firestore, serverTimestamp } from "lib/firebase";
-import { kebabCase } from "lodash";
-import { useRouter } from "next/router";
+import styles from "styles/Admin.module.css";
+import {
+  serverTimestamp,
+  query,
+  collection,
+  orderBy,
+  getFirestore,
+  setDoc,
+  doc,
+} from "firebase/firestore";
+
 import { useContext, useState } from "react";
+import { useRouter } from "next/router";
+
 import { useCollection } from "react-firebase-hooks/firestore";
 import toast from "react-hot-toast";
+import AuthCheck from "components/AuthCheck";
+import PostFeed from "components/PostFeed";
+import { auth } from "lib/firebase";
+import { kebabCase } from "lodash";
+import { UserContext } from "state/context";
 
-export default function AdminPostsPage() {
+export default function AdminPostsPage(props) {
   return (
     <main>
-      <h1>Admin page</h1>
-      <AuthCheck fallback={undefined}>
-        <PostList></PostList>
-        <CreateNewPost></CreateNewPost>
+      <AuthCheck>
+        <PostList />
+        <CreateNewPost />
       </AuthCheck>
     </main>
   );
 }
 
 function PostList() {
-  const ref = firestore
-    .collection("users")
-    .doc(auth?.currentUser?.uid)
-    .collection("posts");
-  const query = ref.orderBy("createdAt");
-  const [querySnapshot] = useCollection(query);
+  // const ref = firestore.collection('users').doc(auth.currentUser.uid).collection('posts');
+  // const query = ref.orderBy('createdAt');
+
+  const ref = collection(
+    getFirestore(),
+    "users",
+    auth.currentUser!.uid,
+    "posts"
+  );
+  const postQuery = query(ref, orderBy("createdAt"));
+
+  const [querySnapshot] = useCollection(postQuery);
 
   const posts = querySnapshot?.docs.map((doc) => doc.data());
 
@@ -41,22 +58,19 @@ function PostList() {
 function CreateNewPost() {
   const router = useRouter();
   const { username } = useContext(UserContext);
-
   const [title, setTitle] = useState("");
 
+  // Ensure slug is URL safe
   const slug = encodeURI(kebabCase(title));
 
+  // Validate length
   const isValid = title.length > 3 && title.length < 100;
 
   // Create a new post in firestore
   const createPost = async (e) => {
     e.preventDefault();
-    const uid = auth.currentUser.uid;
-    const ref = firestore
-      .collection("users")
-      .doc(uid)
-      .collection("posts")
-      .doc(slug);
+    const uid = auth.currentUser!.uid;
+    const ref = doc(getFirestore(), "users", uid, "posts", slug);
 
     // Tip: give all fields a default value here
     const data = {
@@ -71,7 +85,7 @@ function CreateNewPost() {
       heartCount: 0,
     };
 
-    await ref.set(data);
+    await setDoc(ref, data);
 
     toast.success("Post created!");
 
@@ -85,6 +99,7 @@ function CreateNewPost() {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="My Awesome Article!"
+        className={styles.input}
       />
       <p>
         <strong>Slug:</strong> {slug}

@@ -1,4 +1,4 @@
-import { BlogUser } from "lib/context";
+import { BlogUser } from "state/context";
 import React from "react";
 
 type Props = {

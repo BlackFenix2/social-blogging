@@ -1,4 +1,4 @@
-import { UserContext } from "lib/context";
+import { UserContext } from "state/context";
 import Link from "next/link";
 import React, { useContext } from "react";
 
@@ -25,7 +25,10 @@ const Navbar = (props: Props) => {
             </li>
             <li>
               <Link href={`/${username}`} passHref>
-                <img src={user?.photoURL} referrerPolicy="no-referrer" />
+                <img
+                  src={user?.photoURL as string}
+                  referrerPolicy="no-referrer"
+                />
               </Link>
             </li>
           </>
