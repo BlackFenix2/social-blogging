@@ -14,18 +14,8 @@ import {
 import { getStorage } from "firebase/storage";
 import firebaseApp from "./firebaseApp";
 
-// Auth exports
-// export const auth = firebase.auth();
-export const auth = getAuth(firebaseApp);
-export const googleAuthProvider = new GoogleAuthProvider();
-
 // Firestore exports
 export const firestore = getFirestore(firebaseApp);
-// export const firestore = firebase.firestore();
-// export { firestore };
-// export const serverTimestamp = serverTimestamp;
-// export const fromMillis = fromMillis;
-// export const increment = increment;
 
 // Storage exports
 export const storage = getStorage(firebaseApp);

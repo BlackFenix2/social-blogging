@@ -4,11 +4,11 @@ import PostManager from "components/posts/PostManager";
 
 export default function AdminPostEdit() {
   return (
-    <main>
+    <>
       <Metatags title="Admin page" />
       <AuthCheck>
         <PostManager />
       </AuthCheck>
-    </main>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+import { Button } from "@chakra-ui/react";
 import { deleteDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
@@ -15,8 +16,8 @@ export default function DeletePostButton({ postRef }) {
   };
 
   return (
-    <button className="btn-red" onClick={deletePost}>
+    <Button colorScheme={"red"} onClick={deletePost} marginY={2}>
       Delete
-    </button>
+    </Button>
   );
 }

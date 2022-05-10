@@ -3,9 +3,18 @@ import { signInWithPopup, signInAnonymously, signOut } from "firebase/auth";
 
 import { useEffect, useState, useCallback, useContext } from "react";
 import Metatags from "components/Metatags";
-import { auth, googleAuthProvider } from "lib/firebase";
 import { debounce } from "lodash";
 import { UserContext } from "state/context";
+import { auth, signInWithGooglePopup } from "lib/firebase/auth";
+import {
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Input,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
 export default function Enter(props) {
   const { user, username } = useContext(UserContext);
@@ -14,7 +23,7 @@ export default function Enter(props) {
   // 2. user signed in, but missing username <UsernameForm />
   // 3. user signed in, has username <SignOutButton />
   return (
-    <main>
+    <>
       <Metatags title="Enter" description="Sign up for this amazing app!" />
       {user ? (
         !username ? (
@@ -25,31 +34,40 @@ export default function Enter(props) {
       ) : (
         <SignInButton />
       )}
-    </main>
+    </>
   );
 }
 
 // Sign in with Google button
 function SignInButton() {
   const signInWithGoogle = async () => {
-    await signInWithPopup(auth, googleAuthProvider);
+    await signInWithGooglePopup();
   };
 
   return (
-    <>
-      <button className="btn-google" onClick={signInWithGoogle}>
-        <img src={"/google.png"} width="30px" /> Sign in with Google
-      </button>
-      <button onClick={() => signInAnonymously(auth)}>
+    <Stack alignItems={"flex-start"}>
+      <Button colorScheme={"messenger"} onClick={signInWithGoogle}>
+        <Image marginRight={"10px"} src={"/google.png"} width="30px" /> Sign in
+        with Google
+      </Button>
+      <Button colorScheme={"teal"} onClick={() => signInAnonymously(auth)}>
         Sign in Anonymously
-      </button>
-    </>
+      </Button>
+    </Stack>
   );
 }
 
 // Sign out button
 function SignOutButton() {
-  return <button onClick={() => signOut(auth)}>Sign Out</button>;
+  return (
+    <Button
+      colorScheme={"blackAlpha"}
+      color="black"
+      onClick={() => signOut(auth)}
+    >
+      Sign Out
+    </Button>
+  );
 }
 
 // Username form
@@ -120,36 +138,45 @@ function UsernameForm() {
   );
 
   return (
-    !username && (
-      <section>
-        <h3>Choose Username</h3>
-        <form onSubmit={onSubmit}>
-          <input
-            name="username"
-            placeholder="myname"
-            value={formValue}
-            onChange={onChange}
-          />
-          <UsernameMessage
-            username={formValue}
-            isValid={isValid}
-            loading={loading}
-          />
-          <button type="submit" className="btn-green" disabled={!isValid}>
-            Choose
-          </button>
+    <section>
+      <Heading as="h3" size={"md"} marginY={4}>
+        Choose Username
+      </Heading>
+      <form onSubmit={onSubmit}>
+        <Input
+          backgroundColor={"white"}
+          fontSize={"md"}
+          name="username"
+          placeholder="myname"
+          value={formValue}
+          onChange={onChange}
+        />
+        <UsernameMessage
+          username={formValue}
+          isValid={isValid}
+          loading={loading}
+        />
+        <Button
+          type="submit"
+          colorScheme={"green"}
+          marginY={3}
+          disabled={!isValid}
+        >
+          Choose
+        </Button>
 
-          <h3>Debug State</h3>
-          <div>
-            Username: {formValue}
-            <br />
-            Loading: {loading.toString()}
-            <br />
-            Username Valid: {isValid.toString()}
-          </div>
-        </form>
-      </section>
-    )
+        <Heading as="h3" size={"md"} marginY={4}>
+          Debug State
+        </Heading>
+        <div>
+          Username: {formValue}
+          <br />
+          Loading: {loading.toString()}
+          <br />
+          Username Valid: {isValid.toString()}
+        </div>
+      </form>
+    </section>
   );
 }
 
@@ -157,10 +184,18 @@ function UsernameMessage({ username, isValid, loading }) {
   if (loading) {
     return <p>Checking...</p>;
   } else if (isValid) {
-    return <p className="text-success">{username} is available!</p>;
+    return (
+      <Text fontWeight={"bold"} color="green">
+        {username} is available!
+      </Text>
+    );
   } else if (username && !isValid) {
-    return <p className="text-danger">That username is taken!</p>;
+    return (
+      <Text fontWeight={"bold"} color="red">
+        That username is taken!
+      </Text>
+    );
   } else {
-    return <p></p>;
+    return <Text></Text>;
   }
 }

@@ -1,5 +1,6 @@
-import { getUserWithUsername, postToJSON } from "lib/firebase";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import Link from "next/link";
+import Card from "./Card";
 
 export default function PostFeed({ posts, admin }: any) {
   return posts
@@ -15,7 +16,7 @@ function PostItem({ post, admin = false }) {
   const minutesToRead = (wordCount / 100 + 1).toFixed(0);
 
   return (
-    <div className="card">
+    <Card>
       <Link href={`/${post.username}`}>
         <a>
           <strong>By @{post.username}</strong>
@@ -23,34 +24,40 @@ function PostItem({ post, admin = false }) {
       </Link>
 
       <Link href={`/${post.username}/${post.slug}`}>
-        <h2>
+        <Heading as="h2" size={"md"} marginY={4}>
           <a>{post.title}</a>
-        </h2>
+        </Heading>
       </Link>
 
-      <footer>
+      <Flex>
         <span>
           {wordCount} words. {minutesToRead} min read
         </span>
-        <span className="push-left">💗 {post.heartCount || 0} Hearts</span>
-      </footer>
+        <Box as="span" marginLeft={"auto"}>
+          💗 {post.heartCount || 0} Hearts
+        </Box>
+      </Flex>
 
       {/* If admin view, show extra controls for user */}
       {admin && (
         <>
           <Link href={`/admin/${post.slug}`}>
-            <h3>
-              <button className="btn-blue">Edit</button>
-            </h3>
+            <Button colorScheme={"blue"} marginY={4}>
+              Edit
+            </Button>
           </Link>
 
           {post.published ? (
-            <p className="text-success">Live</p>
+            <Text color={"green.400"} fontWeight={700}>
+              Live
+            </Text>
           ) : (
-            <p className="text-danger">Unpublished</p>
+            <Text color="red" fontWeight={700}>
+              Unpublished
+            </Text>
           )}
         </>
       )}
-    </div>
+    </Card>
   );
 }

@@ -1,4 +1,8 @@
+import { Box, Button, Checkbox, Text, Textarea } from "@chakra-ui/react";
+import { css } from "@emotion/css";
+import Card from "components/Card";
 import ImageUploader from "components/ImageUploader";
+import MarkdownView from "components/MarkdownView";
 import { serverTimestamp, updateDoc } from "firebase/firestore";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -7,7 +11,7 @@ import ReactMarkdown from "react-markdown";
 import styles from "styles/Admin.module.css";
 
 export default function PostForm({ defaultValues, postRef, preview }) {
-  const { register, errors, handleSubmit, formState, reset, watch } = useForm({
+  const { register, handleSubmit, formState, reset, watch } = useForm({
     defaultValues: {
       content: defaultValues.content,
       published: defaultValues.published,
@@ -15,7 +19,7 @@ export default function PostForm({ defaultValues, postRef, preview }) {
     mode: "onChange",
   });
 
-  const { isValid, isDirty } = formState;
+  const { isValid, isDirty, errors } = formState;
 
   const updatePost = async ({ content, published }) => {
     await updateDoc(postRef, {
@@ -32,15 +36,17 @@ export default function PostForm({ defaultValues, postRef, preview }) {
   return (
     <form onSubmit={handleSubmit(updatePost)}>
       {preview && (
-        <div className="card">
-          <ReactMarkdown>{watch("content")}</ReactMarkdown>
-        </div>
+        <Card>
+          <MarkdownView>{watch("content")}</MarkdownView>
+        </Card>
       )}
 
-      <div className={preview ? styles.hidden : styles.controls}>
+      <Box display={preview ? "none" : "flex"} flexDirection="column">
         <ImageUploader />
 
-        <textarea
+        <Textarea
+          height={"60vh"}
+          backgroundColor="white"
           {...register("content", {
             maxLength: { value: 20000, message: "content is too long" },
             minLength: { value: 10, message: "content is too short" },
@@ -49,26 +55,23 @@ export default function PostForm({ defaultValues, postRef, preview }) {
         />
 
         {errors?.content && (
-          <p className="text-danger">{errors.content.message}</p>
+          <Text color="red" fontWeight={"bold"}>
+            {errors.content.message}
+          </Text>
         )}
 
-        <fieldset>
-          <input
-            className={styles.checkbox}
-            {...register("published")}
-            type="checkbox"
-          />
-          <label>Published</label>
-        </fieldset>
+        <Checkbox marginY={4} {...register("published")}>
+          Published
+        </Checkbox>
 
-        <button
+        <Button
+          colorScheme={"green"}
           type="submit"
-          className="btn-green"
           disabled={!isDirty || !isValid}
         >
           Save Changes
-        </button>
-      </div>
+        </Button>
+      </Box>
     </form>
   );
 }

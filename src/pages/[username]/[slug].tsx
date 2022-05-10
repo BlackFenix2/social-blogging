@@ -1,5 +1,3 @@
-import styles from "styles/Post.module.css";
-
 import { firestore, getUserWithUsername, postToJSON } from "lib/firebase";
 import {
   doc,
@@ -19,6 +17,8 @@ import AuthCheck from "components/AuthCheck";
 import HeartButton from "components/HeartButton";
 import Metatags from "components/Metatags";
 import PostContent from "components/PostContent";
+import { Box, Button, Flex } from "@chakra-ui/react";
+import Card from "components/Card";
 
 export async function getStaticProps({ params }) {
   const { username, slug } = params;
@@ -74,14 +74,30 @@ export default function Post(props) {
   const { user: currentUser } = useContext(UserContext);
 
   return (
-    <main className={styles.container}>
+    <Flex minHeight={"100vh"} flexDirection={{ base: "column", md: "row" }}>
       <Metatags title={post.title} description={post.title} />
 
-      <section>
+      <Box
+        as="section"
+        width={{ base: "100%", md: "80%" }}
+        marginRight={"1rem"}
+      >
         <PostContent post={post} />
-      </section>
-
-      <aside className="card">
+      </Box>
+      <Card
+        as="aside"
+        display={"flex"}
+        flexDirection={"column"}
+        width={{ base: "100%", md: "20%" }}
+        alignItems={"stretch"}
+        justifyContent={"center"}
+        minHeight="300px"
+        minWidth="250px"
+        textAlign={"center"}
+        position={{ base: "sticky", md: "relative" }}
+        top="0"
+        height={"0"}
+      >
         <p>
           <strong>{post.heartCount || 0} 🤍</strong>
         </p>
@@ -89,7 +105,7 @@ export default function Post(props) {
         <AuthCheck
           fallback={
             <Link href="/enter">
-              <button>💗 Sign Up</button>
+              <Button marginY={2}>💗 Sign Up</Button>
             </Link>
           }
         >
@@ -98,10 +114,12 @@ export default function Post(props) {
 
         {currentUser?.uid === post.uid && (
           <Link href={`/admin/${post.slug}`}>
-            <button className="btn-blue">Edit Post</button>
+            <Button colorScheme={"blue"} marginY={2}>
+              Edit Post
+            </Button>
           </Link>
         )}
-      </aside>
-    </main>
+      </Card>
+    </Flex>
   );
 }

@@ -1,6 +1,10 @@
+import { Heading, Text } from "@chakra-ui/react";
+import { css } from "@emotion/css";
 import Link from "next/link";
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import Card from "./Card";
+import MarkdownView from "./MarkdownView";
 
 type Props = {
   post: any;
@@ -12,17 +16,27 @@ const PostContent = ({ post }: Props) => {
       ? new Date(post.createdAt)
       : post.createdAt.toDate();
   return (
-    <div className="card">
-      <h1>{post?.title}</h1>
-      <span className="text-sm">
+    <Card>
+      <Heading as="h1" marginY={8}>
+        {post?.title}
+      </Heading>
+      <Text fontSize={"sm"}>
         Written by{" "}
         <Link href={`/${post.username}`}>
-          <a className="text-info">@{post.username}</a>
+          <a
+            className={css`
+              font-weight: bold;
+              color: #3b49df;
+            `}
+          >
+            @{post.username}
+          </a>
         </Link>{" "}
         on {createdAt.toDateString()}
-      </span>
-      <ReactMarkdown>{post?.content}</ReactMarkdown>
-    </div>
+      </Text>
+
+      <MarkdownView>{post?.content}</MarkdownView>
+    </Card>
   );
 };
 

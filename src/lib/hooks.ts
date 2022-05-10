@@ -1,4 +1,4 @@
-import { auth, firestore } from "../lib/firebase";
+import { auth } from "lib/firebase/auth";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getFirestore, onSnapshot } from "firebase/firestore";

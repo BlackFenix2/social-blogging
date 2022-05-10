@@ -1,5 +1,6 @@
 import { BlogUser } from "state/context";
 import React from "react";
+import { Center, Flex, Heading, Image } from "@chakra-ui/react";
 
 type Props = {
   user: BlogUser;
@@ -7,13 +8,20 @@ type Props = {
 
 const UserProfile = ({ user }: Props) => {
   return (
-    <div className="box-center">
-      <img src={user?.photoURL || "/hacker.png"} className="card-img-center" />
+    <Flex flexDirection={"column"} alignContent={"center"} textAlign="center">
+      <Image
+        src={user?.photoURL || "/hacker.png"}
+        margin="auto"
+        width={"20%"}
+        borderRadius="50%"
+        maxWidth={"150px"}
+        alt="user profile icon"
+      />
       <p>
         <i>@{user?.username}</i>
       </p>
-      <h1>{user?.displayName || "Anonymous User"}</h1>
-    </div>
+      <Heading as="h1">{user?.displayName || "Anonymous User"}</Heading>
+    </Flex>
   );
 };
 

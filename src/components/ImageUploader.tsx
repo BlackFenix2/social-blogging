@@ -1,7 +1,10 @@
+import { Button, Code, Flex, Spinner } from "@chakra-ui/react";
+import { css } from "@emotion/css";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { auth } from "lib/firebase/auth";
 import React, { SyntheticEvent } from "react";
 import { useState } from "react";
-import { auth, storage, STATE_CHANGED } from "../lib/firebase";
+import { storage, STATE_CHANGED } from "../lib/firebase";
 import Loader from "./Loader";
 
 type Props = {};
@@ -48,27 +51,42 @@ const ImageUploader = (props: Props) => {
   };
 
   return (
-    <div className="box">
-      <Loader show={uploading}></Loader>
+    <Flex justifyContent={"space-between"}>
+      <Spinner hidden={!uploading} />
       {uploading && <h3>{progress}%</h3>}
 
       {!uploading && (
         <>
-          <label className="btn">
+          <Button
+            as={"label"}
+            colorScheme={"blackAlpha"}
+            color={"black"}
+            cursor="pointer"
+            marginY={2}
+          >
             📸 Upload Img
             <input
               type="file"
+              style={{ display: "none" }}
               onChange={uploadFile}
               accept="image/x-png,image/gif,image/jpeg"
             />
-          </label>
+          </Button>
         </>
       )}
 
       {downloadURL && (
-        <code className="upload-snippet">{`![alt](${downloadURL})`}</code>
+        <Code
+          className={css`
+            width: 75%;
+            margin-left: auto;
+            background: white;
+            padding: 5px;
+            margin: 5px 0;
+          `}
+        >{`![alt](${downloadURL})`}</Code>
       )}
-    </div>
+    </Flex>
   );
 };
 

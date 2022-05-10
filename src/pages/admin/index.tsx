@@ -16,18 +16,19 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import toast from "react-hot-toast";
 import AuthCheck from "components/AuthCheck";
 import PostFeed from "components/PostFeed";
-import { auth } from "lib/firebase";
+import { auth } from "lib/firebase/auth";
 import { kebabCase } from "lodash";
 import { UserContext } from "state/context";
+import { Box, Button, Heading, Input, Text } from "@chakra-ui/react";
 
 export default function AdminPostsPage(props) {
   return (
-    <main>
+    <Box paddingTop={10}>
       <AuthCheck>
         <PostList />
         <CreateNewPost />
       </AuthCheck>
-    </main>
+    </Box>
   );
 }
 
@@ -49,7 +50,7 @@ function PostList() {
 
   return (
     <>
-      <h1>Manage your Posts</h1>
+      <Heading as="h1">Manage your Posts</Heading>
       <PostFeed posts={posts} admin />
     </>
   );
@@ -95,18 +96,20 @@ function CreateNewPost() {
 
   return (
     <form onSubmit={createPost}>
-      <input
+      <Input
         value={title}
+        size="lg"
         onChange={(e) => setTitle(e.target.value)}
         placeholder="My Awesome Article!"
-        className={styles.input}
+        fontSize={"2.5rem"}
+        backgroundColor="white"
       />
-      <p>
+      <Text marginY={4}>
         <strong>Slug:</strong> {slug}
-      </p>
-      <button type="submit" disabled={!isValid} className="btn-green">
+      </Text>
+      <Button type="submit" disabled={!isValid} colorScheme="green">
         Create New Post
-      </button>
+      </Button>
     </form>
   );
 }
